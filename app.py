@@ -10,19 +10,15 @@ users = {'username': 'password'}  # Insecure, for demonstration purposes only
 def index():
     return render_template('login.html')
 
-@app.route('/login', methods=['POST'])
+@app.route('/login', methods=['GET', 'POST'])
 def login():
-    username = request.form['username']
-    password = request.form['password']
-
-    if username in users and users[username] == password:
-        # Successful login
-        flash('Login successful', 'success')
-        return redirect(url_for('dashboard'))
-    else:
-        # Failed login
-        flash('Login failed. Please check your credentials.', 'error')
-        return redirect(url_for('index'))
+    error = None
+    if request.method == 'POST':
+        if request.form['username'] != 'username' or request.form['password'] != 'password':
+            error = 'Invalid Credentials. Please try again.'
+        else:
+            return redirect(url_for('dashboard'))
+    return render_template('login.html', error=error)
 
 @app.route('/dashboard')
 def dashboard():
